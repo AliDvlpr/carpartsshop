@@ -12,11 +12,11 @@ conn = psycopg2.connect(
 # Create a cursor object to execute SQL queries
 cur = conn.cursor()
 
-# Get the car part number from the user
-part_number = input("Enter car part number to search: ")
+# Get the car part ID from the user
+part_id = input("Enter car part ID to search: ")
 
 # Execute the SQL query to fetch the car part by number
-cur.execute("SELECT * FROM carparts WHERE number = %s", (part_number,))
+cur.execute("SELECT * FROM carparts WHERE number = %s", (part_id,))
 
 # Fetch the row from the result set
 row = cur.fetchone()
@@ -29,6 +29,18 @@ if row:
     print("Price:", row[2])
     print("Inventory:", row[3])
     print("Description:", row[4])
+
+    # Get the amount to reduce from inventory
+    reduce_amount = int(input("Enter the amount to reduce from inventory: "))
+
+    # Calculate the updated inventory value
+    updated_inventory = row[3] - reduce_amount
+
+    # Execute the SQL query to update the inventory
+    cur.execute("UPDATE carparts SET inventory = %s WHERE number = %s", (updated_inventory, part_id))
+    conn.commit()
+
+    print("Inventory updated successfully.")
 else:
     print("Car Part not found.")
 
